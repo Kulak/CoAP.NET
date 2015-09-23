@@ -219,6 +219,9 @@ namespace CoAP.Net
 
         private void ReceiveData(DataReceivedEventArgs e)
         {
+			if (log.IsDebugEnabled) {
+				log.Debug(string.Format("EP: {0}, Data: {1}", e.EndPoint, BitConverter.ToString(e.Data)));
+			}
             IMessageDecoder decoder = Spec.NewMessageDecoder(e.Data);
             if (decoder.IsRequest)
             {
@@ -259,7 +262,10 @@ namespace CoAP.Net
             else if (decoder.IsResponse)
             {
                 Response response = decoder.DecodeResponse();
-                response.Source = e.EndPoint;
+				response.Source = e.EndPoint;
+				if (log.IsDebugEnabled)
+					log.Debug(string.Format("Decoded response MessageID: {0}, token: {1}, from IP: {2}.\n",
+						response.ID, response.TokenString, response.Source));
 
                 Exchange exchange = _matcher.ReceiveResponse(response);
                 if (exchange != null)

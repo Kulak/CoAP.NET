@@ -12,11 +12,14 @@
 using System;
 using System.Net;
 using System.Net.Sockets;
+using CoAP.Log;
 
 namespace CoAP.Channel
 {
     public partial class UDPChannel
     {
+		private static readonly ILogger _log = LogManager.GetLogger(typeof(UDPChannel));
+
         private UDPSocket NewUDPSocket(AddressFamily addressFamily, Int32 bufferSize)
         {
             return new UDPSocket(addressFamily, bufferSize, SocketAsyncEventArgs_Completed);
@@ -51,7 +54,7 @@ namespace CoAP.Channel
                 return;
             }
 
-            if (!willRaiseEvent)
+			if (!willRaiseEvent)
             {
                 ProcessReceive(socket.ReadBuffer);
             }
@@ -59,6 +62,8 @@ namespace CoAP.Channel
 
         private void BeginSend(UDPSocket socket, Byte[] data, System.Net.EndPoint destination)
         {
+			if (_log.IsDebugEnabled)
+				_log.Debug(string.Format("Sending to: {0}, data: {1}", destination, BitConverter.ToString(data)));
             socket.SetWriteBuffer(data, 0, data.Length);
             socket.WriteBuffer.RemoteEndPoint = destination;
 

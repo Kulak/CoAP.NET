@@ -228,8 +228,12 @@ namespace CoAP.Channel
                     if (IPAddressExtensions.IsIPv4MappedToIPv6(ipep.Address))
                         ipep.Address = IPAddressExtensions.MapToIPv4(ipep.Address);
                 }
-
-                FireDataReceived(bytes, ep);
+				if (_log.IsDebugEnabled)
+					if (socket.Socket.Connected)
+						_log.Debug(string.Format("Successfully read EP-r: {0}, Data: {1}", socket.Socket.RemoteEndPoint, bytes));
+					else
+						_log.Debug(string.Format("Successfully read EP-l: {0}, Data: {1}", ep, bytes));
+				FireDataReceived(bytes, ep);
             }
 
             BeginReceive(socket);
@@ -237,7 +241,8 @@ namespace CoAP.Channel
 
         private void EndReceive(UDPSocket socket, Exception ex)
         {
-            // TODO may log exception?
+			if (_log.IsDebugEnabled)
+				_log.Debug(string.Format("Failed to read EP: {0}, Error: {1}", socket.Socket.RemoteEndPoint, ex));
             BeginReceive(socket);
         }
 
