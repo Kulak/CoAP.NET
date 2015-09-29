@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CoAP.Client.DNX": {
+      "commandName": "CoAP.Client.DNX",
+      "commandLineArgs": "discover coap://192.168.18.109"
+    }
+  }
+}
